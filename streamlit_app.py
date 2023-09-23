@@ -9,7 +9,10 @@ import streamlit as st
 from google.cloud import firestore
 
 # Authenticate to Firestore with the JSON account key.
-db = firestore.Client.from_service_account_json("firestore-key.json")
+import json
+key_dict = json.loads(st.secrets["textkey"])
+creds = firestore.Credentials.from_service_account_info(key_dict)
+db = firestore.Client(credentials=creds, project="streamlit-reddit")
 
 # Create a reference to the Google post.
 doc_ref = db.collection("posts").document("Google")
