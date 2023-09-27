@@ -8,7 +8,8 @@ from dataclasses import dataclass
 
 st.set_page_config(layout="wide")
 
-ALL_METHODS = ["ours", "gligen", "layoutgpt", "llmgrounded", "stablediffusion"]
+# ALL_METHODS = ["ours", "gligen", "layoutgpt", "llmgrounded", "stablediffusion"]
+ALL_METHODS = ['image', 'depth']
 caption_col = "caption"
 
 
