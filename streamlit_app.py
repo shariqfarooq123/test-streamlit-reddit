@@ -61,7 +61,9 @@ def preference_ui(twoafc_dict):
 	method2_name = twoafc_data['method2_name']
 
 	method2image = {method1_name: method1_image, method2_name: method2_image}
-	for col, (method, image) in zip(cols, method2image.items()):
+	items = list(method2image.items())
+	random.shuffle(items)
+	for col, (method, image) in zip(cols, items):
 		with col:
 			st.checkbox("", key=f"checkbox_{method}", on_change=make_checkboxes_exclusive, kwargs=dict(selected_key=f"checkbox_{method}"))
 			st.image(image)
