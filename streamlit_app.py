@@ -59,10 +59,13 @@ def preference_ui(twoafc_dict):
 	method2_image = twoafc_data['method2']
 	method1_name = twoafc_data['method1_name']
 	method2_name = twoafc_data['method2_name']
+	order = twoafc_data['order']
 
 	method2image = {method1_name: method1_image, method2_name: method2_image}
 	items = list(method2image.items())
-	random.shuffle(items)
+	# random.shuffle(items)
+	if order == 1:
+		items = items[::-1]
 	for col, (method, image) in zip(cols, items):
 		with col:
 			st.checkbox("", key=f"checkbox_{method}", on_change=make_checkboxes_exclusive, kwargs=dict(selected_key=f"checkbox_{method}"))
@@ -83,6 +86,7 @@ def on_submit(twoafc_dict):
 	for method in methods:
 		if st.session_state[f"checkbox_{method}"]:
 			ref = twoafc_dict.pop('ref')
+			twoafc_dict.pop('order')
 			upload_preference(twoafc_dict, method)
 			# delete the element from the queue
 			ref.reference.delete()
@@ -135,6 +139,9 @@ def get_next_2afc():
 	twoafc_doc = random.choice(choices)
 	twoafc_dict = twoafc_doc.to_dict()
 	twoafc_dict['ref'] = twoafc_doc
+	# set random order
+	order = random.choice([0,1])
+	twoafc_dict['order'] = order
 	# delete the element from the queue
 	# twoafc_doc.delete()
 	# return the element
@@ -149,7 +156,8 @@ def load_2afc_data(twoafc_dict):
 		method2=row[twoafc_dict["method2"]],
 		method1_name=twoafc_dict["method1"],
 		method2_name=twoafc_dict["method2"],
-		caption=row[caption_col]
+		caption=row[caption_col],
+		order=twoafc_dict['order']
 	)
 
 	
