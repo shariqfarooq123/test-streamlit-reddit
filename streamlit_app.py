@@ -84,7 +84,9 @@ def on_submit(twoafc_dict):
 			upload_preference(twoafc_dict, method)
 			# delete the element from the queue
 			ref.reference.delete()
+			set_state(done_so_far=get_state("done_so_far") + 1)
 	clear_checkboxes()
+	# update count
 	update_data()
 
 def get_current_set():
@@ -158,12 +160,42 @@ def display_preferences():
 	for pref in preferences:
 		st.write(pref.to_dict())
 
+def count_to_emoji(count):
+	if count == 0:
+		# sad face
+		return "😞"
+	elif count <= 3:
+		# neutral face
+		return "😐"
+	elif count <= 6:
+		# slightly smiling face
+		return "🙂"
+	elif count <= 9:
+		# smiling face with smiling eyes
+		return "😊"
+	elif count <= 12:
+		# hug face
+		return "🤗"
+	elif count <= 15:
+		# bronze medal
+		return "🥉"
+	elif count < 18:
+		# silver medal
+		return "🥈"
+	elif count >= 18:
+		# gold medal
+		return "🥇"
+
+
+
+
+
 
 if not hasattr(st.session_state, "user_id"):
 	key_dict = json.loads(st.secrets["textkey"])
 	creds = service_account.Credentials.from_service_account_info(key_dict)
 	db = firestore.Client(credentials=creds)
-	set_state(db=db, data=load_data(), user_id=str(uuid.uuid4()), row=None)
+	set_state(db=db, data=load_data(), user_id=str(uuid.uuid4()), row=None, done_so_far=0)
 
 
 st.title("Welcome! Thank you for participating in our study.")
@@ -171,7 +203,13 @@ st.title("Welcome! Thank you for participating in our study.")
 ## Instructions
 #### Select the image (by clicking the checkbox above it) that most accurately represents the provided textual description (in blue). 
 Image quality is not a factor to consider. Please thoroughly examine the image before making your selection. Your task is to identify the image that, in your judgment, aligns most closely with the provided description. It may be possible that few objects in the descriptions may not be present in any of the images. In that case choose the image that according to you has the maximum information encompassing the text. 
+
 Click 'Submit' to submit your response. If you are unsure, click 'I'm not sure'.
+
+Please submit as many responses as you can. Thank you for your time!
 """
 twoafc_dict = get_current_set()
 preference_ui(twoafc_dict)
+count = get_state("done_so_far")
+st.write(f"You've submitted {count} response(s) {count_to_emoji(count)}")
+
