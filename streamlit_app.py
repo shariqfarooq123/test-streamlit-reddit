@@ -8,11 +8,20 @@ from dataclasses import dataclass
 
 st.set_page_config(layout="wide")
 
-ALL_METHODS = ["image", "depth"]
+ALL_METHODS = ["ours", "gligen", "layoutgpt", "llmgrounded", "stablediffusion"]
+caption_col = "caption"
+
+
+class TwoAFC:
+	def __init__(self, data):
+		self.data = data
+		inds = list(range(len(data)))
+
 
 def load_data():
 	with st.spinner("Loading ..."):
-		data = datasets.load_dataset("shariqfarooq/cs323_densepred_depth", streaming=True, split='test', keep_in_memory=True)
+		# data = datasets.load_dataset("shariqfarooq/cs323_densepred_depth", streaming=True, split='test', keep_in_memory=True)
+		data = datasets.load_dataset("shariqfarooq/cs323_densepred_depth", split='test', keep_in_memory=True)
 		# data = data.shuffle(buffer_size=10)
 	return iter(data)
 
