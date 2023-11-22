@@ -4,3 +4,4 @@ key_to_toml.py
 data/
 *.ipynb
 prep_firestore.py
+out/

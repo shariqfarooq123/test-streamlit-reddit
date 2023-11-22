@@ -5,6 +5,7 @@ import datasets
 import json
 import uuid
 import random
+from dataclasses import dataclass
 
 st.set_page_config(layout="wide")
 
@@ -13,6 +14,26 @@ caption_col = "caption"
 CURRENT_2AFC_KEY = "curr_2afc"
 USER_PREFFERENCES_COLLECTION = "userpreferences"
 
+
+class Qualification:
+	BACHELORS = "Bachelors"
+	MASTERS = "Masters"
+	PHD = "PhD (Student or passed out)"
+	OTHER = "Other"
+
+class Background:
+	COMPUTER_VISION = "Computer Vision"
+	COMPUTER_SCIENCE = "Computer Science"
+	ENGINEERING = "Engineering"
+	OTHER = "Other"
+
+@dataclass
+class UserInfo:
+	academic_qualification: Qualification
+	background: Background
+
+	def to_dict(self):
+		return self.__dict__
 
 
 
@@ -104,7 +125,8 @@ def upload_preference(twoafc_dict, chosen_method):
 	db : firestore.Client
 	db, user_id = get_state("db", "user_id")
 	col = db.collection(USER_PREFFERENCES_COLLECTION)
-	col.add({'user_id': user_id, 'chosen': chosen_method, **twoafc_dict})
+	user_info = get_state("user_info")
+	col.add({'user_id': user_id, 'chosen': chosen_method, 'user_info': user_info, **twoafc_dict})
 
 def get_next_2afc():
 	db : firestore.Client
@@ -197,6 +219,19 @@ def count_to_emoji(count):
 		return "🥇"
 
 
+def show_user_info_form():
+	with st.form("user_info_form"):
+		st.header("Please fill out the following information")
+		academic_qualification = st.selectbox("Academic Qualification", [Qualification.BACHELORS, Qualification.MASTERS, Qualification.PHD, Qualification.OTHER])
+		background = st.selectbox("Background (Choose the closest)", [Background.COMPUTER_VISION, Background.COMPUTER_SCIENCE, Background.ENGINEERING, Background.OTHER])
+		submit_button = st.form_submit_button("Submit")
+		if submit_button:
+			set_user_info(UserInfo(academic_qualification, background))
+
+
+def set_user_info(user_info: UserInfo):
+	set_state(user_info=user_info.to_dict())
+
 
 
 
@@ -207,19 +242,23 @@ if not hasattr(st.session_state, "user_id"):
 	db = firestore.Client(credentials=creds)
 	set_state(db=db, data=load_data(), user_id=str(uuid.uuid4()), row=None, done_so_far=0)
 
+if not hasattr(st.session_state, "user_info"):
+	st.title("Welcome! Thank you for participating in our study.")
+	st.write("Please fill out the following information.")
+	show_user_info_form()
+else:
+	st.title("Welcome! Thank you for participating in our study.")
+	"""
+	## Instructions
+	#### Select the image (by clicking the checkbox above it) that most accurately represents the provided textual description (in blue). 
+	Image quality is not a factor to consider. Please thoroughly examine the image before making your selection. Your task is to identify the image that, in your judgment, aligns most closely with the provided description. It may be possible that few objects in the descriptions may not be present in any of the images. In that case choose the image that according to you has the maximum information encompassing the text. 
 
-st.title("Welcome! Thank you for participating in our study.")
-"""
-## Instructions
-#### Select the image (by clicking the checkbox above it) that most accurately represents the provided textual description (in blue). 
-Image quality is not a factor to consider. Please thoroughly examine the image before making your selection. Your task is to identify the image that, in your judgment, aligns most closely with the provided description. It may be possible that few objects in the descriptions may not be present in any of the images. In that case choose the image that according to you has the maximum information encompassing the text. 
+	Click 'Submit' to submit your response. If you are unsure, click 'I'm not sure'.
 
-Click 'Submit' to submit your response. If you are unsure, click 'I'm not sure'.
-
-Please submit as many responses as you can. Thank you for your time!
-"""
-twoafc_dict = get_current_set()
-preference_ui(twoafc_dict)
-count = get_state("done_so_far")
-st.write(f"You've submitted {count} response(s) {count_to_emoji(count)}")
+	Please submit as many responses as you can. Thank you for your time!
+	"""
+	twoafc_dict = get_current_set()
+	preference_ui(twoafc_dict)
+	count = get_state("done_so_far")
+	st.write(f"You've submitted {count} response(s) {count_to_emoji(count)}")
 
