@@ -238,8 +238,7 @@ def show_user_study():
 	st.title("Welcome! Thank you for participating in our study.")
 	"""
 	## Instructions
-	#### Select the image (by clicking the checkbox above it) that most accurately represents the provided textual description (in blue). 
-	Select the image that in your opinion has highest fidelity and aligns most closely with the provided description.
+	#### Select the image (by clicking the checkbox above it) that in your opinion has highest fidelity and aligns most closely with the provided description (in blue). 
 
 	Click 'Submit' to submit your response. If you are unsure, click 'I'm not sure'.
 
