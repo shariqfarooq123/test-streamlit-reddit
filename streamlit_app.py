@@ -239,7 +239,7 @@ def show_user_study():
 	"""
 	## Instructions
 	#### Select the image (by clicking the checkbox above it) that most accurately represents the provided textual description (in blue). 
-	Image quality is not a factor to consider. Please thoroughly examine the image before making your selection. Your task is to identify the image that, in your judgment, aligns most closely with the provided description. It may be possible that few objects in the descriptions may not be present in any of the images. In that case choose the image that according to you has the maximum information encompassing the text. 
+	Select the image that in your opinion has highest fidelity and aligns most closely with the provided description.
 
 	Click 'Submit' to submit your response. If you are unsure, click 'I'm not sure'.
 
