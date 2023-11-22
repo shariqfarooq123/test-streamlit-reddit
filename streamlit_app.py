@@ -220,6 +220,8 @@ def count_to_emoji(count):
 
 
 def show_user_info_form():
+	st.title("Welcome! Thank you for participating in our study.")
+	st.write("Please fill out the following information.")
 	with st.form("user_info_form"):
 		st.header("Please fill out the following information")
 		academic_qualification = st.selectbox("Academic Qualification", [Qualification.BACHELORS, Qualification.MASTERS, Qualification.PHD, Qualification.OTHER])
@@ -232,21 +234,7 @@ def show_user_info_form():
 def set_user_info(user_info: UserInfo):
 	set_state(user_info=user_info.to_dict())
 
-
-
-
-
-if not hasattr(st.session_state, "user_id"):
-	key_dict = json.loads(st.secrets["textkey"])
-	creds = service_account.Credentials.from_service_account_info(key_dict)
-	db = firestore.Client(credentials=creds)
-	set_state(db=db, data=load_data(), user_id=str(uuid.uuid4()), row=None, done_so_far=0)
-
-if not hasattr(st.session_state, "user_info"):
-	st.title("Welcome! Thank you for participating in our study.")
-	st.write("Please fill out the following information.")
-	show_user_info_form()
-else:
+def show_user_study():
 	st.title("Welcome! Thank you for participating in our study.")
 	"""
 	## Instructions
@@ -262,3 +250,25 @@ else:
 	count = get_state("done_so_far")
 	st.write(f"You've submitted {count} response(s) {count_to_emoji(count)}")
 
+
+
+
+placeholder = st.empty()
+if not hasattr(st.session_state, "user_id"):
+	key_dict = json.loads(st.secrets["textkey"])
+	creds = service_account.Credentials.from_service_account_info(key_dict)
+	db = firestore.Client(credentials=creds)
+	set_state(db=db, data=load_data(), user_id=str(uuid.uuid4()), row=None, done_so_far=0)
+
+if not hasattr(st.session_state, "user_info"):
+	placeholder.empty()
+	with placeholder:
+		show_user_info_form()
+	if hasattr(st.session_state, "user_info"):
+		placeholder.empty()
+		# with placeholder:
+		show_user_study()
+else:
+	placeholder.empty()
+	# with placeholder:
+	show_user_study()
